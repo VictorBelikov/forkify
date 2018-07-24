@@ -10,6 +10,7 @@ export const clearInput = () => {
 
 export const clearResults = () => {
   elements.searchResList.innerHTML = '';
+  elements.searchResPagesButtons.innerHTML = '';
 };
 
 function limitRecipeTitle(title, limit = 17) {
@@ -43,7 +44,42 @@ function renderRecipe(recipe) {
   elements.searchResList.insertAdjacentHTML('beforeend', markup);
 }
 
-export function renderResults(recipes) {
-  // recipes.forEach(el => renderRecipe(el));
-  recipes.forEach(renderRecipe);
+function createButton(page, type) {
+  return `
+    <button class="btn-inline results__btn--${type}" data-goto=${type === 'prev' ? page - 1 : page + 1}>
+      <span>Page ${type === 'prev' ? page - 1 : page + 1}</span>
+      <svg class="search__icon">
+        <use href="img/icons.svg#icon-triangle-${type === 'prev' ? 'left' : 'right'}"></use>
+      </svg>
+    </button>
+  `;
+}
+
+function renderPageButtons(page, numResults, resPerPage) {
+  const pages = Math.ceil(numResults / resPerPage);
+  let button;
+
+  if (page === 1 && pages > 1) {
+    // only button to go to next page
+    button = createButton(page, 'next');
+  } else if (page < pages) {
+    // both buttons
+    button = `
+      ${createButton(page, 'prev')}
+      ${createButton(page, 'next')}
+    `;
+  } else if (page === pages && pages > 1) {
+    // only button to go to previous page
+    button = createButton(page, 'prev');
+  }
+  elements.searchResPagesButtons.insertAdjacentHTML('afterbegin', button);
+}
+
+export function renderResults(recipes, page = 1, resPerPage = 10) {
+  // render results of current page
+  const start = (page - 1) * resPerPage;
+  const end = page * resPerPage;
+  recipes.slice(start, end).forEach(renderRecipe);
+  // render pagination
+  renderPageButtons(page, recipes.length, resPerPage);
 }
