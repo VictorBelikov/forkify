@@ -1,5 +1,3 @@
-/** Тут мы получаем значения полей */
-
 import { elements } from './base';
 
 export const getSearchInput = () => elements.searchInput.value;
