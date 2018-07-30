@@ -4,6 +4,7 @@ export default class List {
   constructor() {
     this.items = [];
   }
+
   addItem(count, unit, ingredient) {
     const item = {
       id: uniqid(),
@@ -14,10 +15,12 @@ export default class List {
     this.items.push(item);
     return item;
   }
+
   deleteItem(id) {
     const index = this.items.findIndex(el => el.id === id);
-    return this.items.splice(index, 1); // изменяет оригинальный массив; возвр.удален.эл-ты
+    this.items.splice(index, 1); // изменяет исходный массив; возвр удаленные
   }
+
   updateCount(id, newCount) {
     this.items.find(el => el.id === id).count = newCount;
   }

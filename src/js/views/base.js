@@ -1,10 +1,9 @@
-// Тут мы находим все поля
 export const elements = {
-  searchForm: document.querySelector('.search'),
+  searchButton: document.querySelector('.search'),
   searchInput: document.querySelector('.search__field'),
-  searchResList: document.querySelector('.results__list'),
-  searchRes: document.querySelector('.results'),
-  searchResPagesButtons: document.querySelector('.results__pages'),
+  recipeResList: document.querySelector('.results__list'),
+  recipeResDiv: document.querySelector('.results'),
+  pageButtons: document.querySelector('.results__pages'),
   recipe: document.querySelector('.recipe'),
   shopping: document.querySelector('.shopping__list'),
   likesMenu: document.querySelector('.likes__field'),
@@ -17,11 +16,11 @@ export const elementStrings = {
 
 export function renderLoader(parent) {
   const loader = `
-   <div class="${elementStrings.loader}">
-    <svg>
-      <use href="img/icons.svg#icon-cw"></use>
-    </svg>
-   </div>
+    <div class="${elementStrings.loader}">
+      <svg>
+        <use href="img/icons.svg#icon-cw"></use>
+      </svg>
+    </div>
   `;
   parent.insertAdjacentHTML('afterbegin', loader);
 }

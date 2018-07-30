@@ -1,4 +1,4 @@
-import axios from 'axios'; // from package.json; instead featch(), whick doesn't work in all browsers
+import axios from 'axios';
 import { key, proxy } from '../config';
 
 export default class Recipe {
@@ -14,24 +14,26 @@ export default class Recipe {
       this.url = res.data.recipe.source_url;
       this.ingredients = res.data.recipe.ingredients;
     } catch (err) {
-      console.log(`ERROR! ${err}`);
-      alert('Something went wrong ;(');
+      console.log(`!!ERROR!! ${err}`);
     }
   }
+  // 15 мин. на каждые 3 ингредиента
   calcTime() {
-    // Assuming that we need 15min for each 3 ingredients
     const numIng = this.ingredients.length;
-    this.time = Math.ceil(numIng / 3) * 15;
+    const periods = Math.ceil(numIng / 3);
+    this.time = periods * 15;
   }
+  // Кол-во порций; 4 порции на каждый рецепт
   calcServings() {
-    this.servings = 4; // 4 порции на каждый рецепт
+    this.servings = 4;
   }
-  parseIngridients() {
+  // Массив строк превращаем в массив объектов, где каждый ингр. - объект
+  parseIngredients() {
     const unitsLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
     const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
     const units = [...unitsShort, 'kg', 'g'];
-    // Из массива строк создаем массив объектов
-    const newIngridients = this.ingredients.map(el => {
+
+    const newIngredients = this.ingredients.map(el => {
       // 1. Uniform units
       let ingredient = el.toLowerCase();
       unitsLong.forEach((unit, i) => {
@@ -41,31 +43,33 @@ export default class Recipe {
       ingredient = ingredient.replace(/ *\([^)]*\) */g, ' '); // [^)]* - кроме указ. в наборе от 0 и более раз
       // 3. Parse ingredients into count, unit and ingredient
       const arrIng = ingredient.split(' ');
-      const unitIndex = arrIng.findIndex(elem => units.includes(elem));
-      let objIng, count;
+      const unitIndex = arrIng.findIndex(ingr => units.includes(ingr));
+      let objIng;
 
       if (~unitIndex) {
         // There is a unit
-        const arrCount = arrIng.slice(0, unitIndex);
+        const arrCount = arrIng.slice(0, unitIndex); // кол-во юнитов(ложек, унций, чашек); 4 1/2 cup --> [4, 1/2]
+        let count;
+
         if (arrCount.length === 1) {
-          count = eval(arrIng[0].replace('-', '+'));
+          count = eval(arrCount[0].replace('-', '+'));
         } else {
-          count = eval(arrCount.join('+')); // eval('5+1/2') --> 5.5
+          count = eval(arrCount.join('+'));
         }
         objIng = {
           count,
           unit: arrIng[unitIndex],
           ingredient: arrIng.slice(unitIndex + 1).join(' ')
         };
-      } else if (parseInt(arrIng[0])) {
-        // There is NO a unit, but 1st elem is number
+      } else if (parseInt(arrIng[0], 10)) {
+        // There is NO unit, but 1st element is a number
         objIng = {
-          count: parseInt(arrIng[0]),
+          count: parseInt(arrIng[0], 10),
           unit: '',
           ingredient: arrIng.slice(1).join(' ')
         };
       } else if (unitIndex === -1) {
-        // There is NO a unit
+        // There is NO unit
         objIng = {
           count: 1,
           unit: '',
@@ -74,15 +78,16 @@ export default class Recipe {
       }
       return objIng;
     });
-    this.ingredients = newIngridients;
+    this.ingredients = newIngredients;
   }
   updateServings(type) {
     // Servings
     const newServings = type === 'dec' ? this.servings - 1 : this.servings + 1;
     // Ingredients
     this.ingredients.forEach(ingr => {
-      ingr.count *= newServings / this.servings; // это вычисление странное
+      ingr.count *= newServings / this.servings;
     });
+
     this.servings = newServings;
   }
 }

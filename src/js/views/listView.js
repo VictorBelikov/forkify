@@ -1,10 +1,10 @@
 import { elements } from './base';
 
-export const renderItem = item => {
+export function renderItem(item) {
   const markup = `
     <li class="shopping__item" data-itemid=${item.id}>
       <div class="shopping__count">
-        <input style="width:45px;" type="number" value="${item.count}" step="${
+        <input type="number" style="width:45px;" value="${item.count}" step="${
     item.count
   }" class="shopping__count-value">
         <p>${item.unit}</p>
@@ -18,9 +18,13 @@ export const renderItem = item => {
     </li>
   `;
   elements.shopping.insertAdjacentHTML('beforeend', markup);
-};
+}
 
-export const deleteItem = id => {
+export function deleteItem(id) {
   const item = document.querySelector(`[data-itemid="${id}"]`);
-  item.parentElement.removeChild(item);
-};
+  if (item) item.parentElement.removeChild(item);
+}
+
+export function clearlist() {
+  elements.shopping.innerHTML = '';
+}
