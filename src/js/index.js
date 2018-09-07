@@ -26,7 +26,7 @@ async function controlSearch() {
     searchView.clearFields();
     renderLoader(elements.recipeResDiv);
     try {
-      // 4. Search for recipes
+      // 4. Search for recipes; await --> Задерживаем код здесь до получения результата
       await state.search.getResults();
       // 5. Render results on UI
       clearLoader();
